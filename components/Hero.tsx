@@ -61,21 +61,29 @@ function Pulse({ reduceMotion, size }: { reduceMotion: RM; size: string }) {
       animate={reduceMotion ? undefined : { y: [0, -14, 0] }}
       transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
     >
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2, 3, 4, 5].map((i) => (
         <motion.span
           key={i}
-          className="absolute inset-0 rounded-full border-2 border-white/60"
+          className={`absolute inset-0 rounded-full ${i % 2 ? "border border-black/20" : "border-2 border-white/70"}`}
           initial={{ opacity: 0 }}
-          animate={reduceMotion ? { opacity: 0 } : { scale: [1, 1.95], opacity: [0.7, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, delay: i * 1.5, ease: "easeOut" }}
+          animate={reduceMotion ? { opacity: 0 } : { scale: [1, 2.5], opacity: [0.8, 0] }}
+          transition={{ duration: 6, repeat: Infinity, delay: i, ease: "easeOut" }}
         />
       ))}
       <motion.span
         className="absolute inset-[-14%] rounded-full border border-dashed border-black/25"
         animate={reduceMotion ? undefined : { rotate: 360 }}
-        transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
       >
         <span className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/60" />
+      </motion.span>
+      <motion.span
+        className="absolute inset-[-32%] rounded-full border border-dotted border-white/70"
+        animate={reduceMotion ? undefined : { rotate: -360 }}
+        transition={{ duration: 70, repeat: Infinity, ease: "linear" }}
+      >
+        <span className="absolute left-1/2 bottom-0 h-4 w-4 -translate-x-1/2 translate-y-1/2 rounded-full bg-white shadow" />
+        <span className="absolute right-[14.6%] top-[14.6%] h-2 w-2 translate-x-1/2 -translate-y-1/2 rounded-full bg-black/50" />
       </motion.span>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -84,7 +92,40 @@ function Pulse({ reduceMotion, size }: { reduceMotion: RM; size: string }) {
         className="relative h-full w-full rounded-full shadow-[0_50px_100px_-30px_rgba(0,0,0,0.65)]"
       />
       <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.2),transparent_55%)]" />
+      {/* Radar-like light sweep across the mark */}
+      <motion.span
+        className="pointer-events-none absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0%,transparent_75%,rgba(255,255,255,0.22)_96%,transparent_100%)] mix-blend-screen"
+        animate={reduceMotion ? undefined : { rotate: 360 }}
+        transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+      />
     </motion.div>
+  );
+}
+
+/* Small gray specks drifting slowly across the stage, like signal in the air. */
+const SPECKS = Array.from({ length: 22 }, (_, i) => ({
+  left: (i * 37 + 11) % 100,
+  top: (i * 53 + 7) % 100,
+  size: 3 + (i % 4) * 2,
+  dark: i % 3 === 0,
+  duration: 9 + (i % 5) * 3,
+  delay: (i % 7) * 0.9,
+}));
+
+function Specks({ reduceMotion }: { reduceMotion: RM }) {
+  if (reduceMotion) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {SPECKS.map((s, i) => (
+        <motion.span
+          key={i}
+          className={`absolute rounded-full ${s.dark ? "bg-black/25" : "bg-white/80"}`}
+          style={{ left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size }}
+          animate={{ y: [0, -60, 0], x: [0, i % 2 ? 24 : -24, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: s.duration, delay: s.delay, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -184,6 +225,9 @@ function Backdrop({
             className="bg-[radial-gradient(closest-side,rgba(255,255,255,0.55),transparent)]"
           />
         </div>
+      </motion.div>
+      <motion.div style={{ x: glowX, y: glowY }} className="pointer-events-none absolute inset-0">
+        <Specks reduceMotion={reduceMotion} />
       </motion.div>
       <div className="pointer-events-none absolute inset-0 bg-[#6b6b6b] mix-blend-soft-light" />
     </>
@@ -321,7 +365,7 @@ function Navigation({ reduceMotion }: { reduceMotion: RM }) {
         href="#inicio"
         aria-label="Tapki"
         className="pointer-events-auto absolute overflow-hidden rounded-full"
-        style={{ left: u(30.6), top: u(20), width: u(42), height: u(42) }}
+        style={{ left: u(30.6), top: u(12), width: u(60), height: u(60) }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.jpg" alt="Tapki" className="h-full w-full" />
@@ -433,13 +477,17 @@ function CtaRow({ reduceMotion }: { reduceMotion: RM }) {
   const t = copy[lang];
   const type = { fontSize: u(18), letterSpacing: u(-0.18) };
   return (
-    <motion.div {...reveal(5, reduceMotion)} className="pointer-events-none absolute inset-0">
+    <motion.div
+      {...reveal(5, reduceMotion)}
+      className="absolute flex items-center"
+      style={{ left: u(107.69), top: uy(527.9), gap: u(14) }}
+    >
       <a
         href={wa(t.wantInfo)}
         target="_blank"
         rel="noopener noreferrer"
-        className="pointer-events-auto absolute flex items-center justify-center rounded-full bg-black font-display font-semibold whitespace-nowrap text-white transition-transform hover:scale-[1.03]"
-        style={{ ...type, left: u(107.69), top: uy(527.9), height: u(60), paddingLeft: u(26), paddingRight: u(26) }}
+        className="flex items-center justify-center rounded-full bg-black font-display font-semibold whitespace-nowrap text-white transition-transform hover:scale-[1.03]"
+        style={{ ...type, height: u(60), paddingLeft: u(30), paddingRight: u(30) }}
       >
         {t.demo}
       </a>
@@ -448,15 +496,15 @@ function CtaRow({ reduceMotion }: { reduceMotion: RM }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp"
-        className="pointer-events-auto absolute flex items-center justify-center rounded-full bg-white transition-transform hover:scale-[1.05]"
-        style={{ left: u(lang === "es" ? 255 : 262), top: uy(527.9), width: u(60), height: u(60) }}
+        className="flex shrink-0 items-center justify-center rounded-full bg-white transition-transform hover:scale-[1.05]"
+        style={{ width: u(60), height: u(60) }}
       >
         <ArrowUpRight strokeWidth={2} style={{ width: u(19.235), height: u(19.235) }} />
       </a>
       <a
         href="#productos"
-        className="pointer-events-auto absolute flex items-center justify-center rounded-full border border-black font-display font-semibold whitespace-nowrap text-black transition-colors hover:bg-black/5"
-        style={{ ...type, left: u(lang === "es" ? 325 : 332), top: uy(527.9), height: u(60), paddingLeft: u(26), paddingRight: u(26) }}
+        className="flex items-center justify-center rounded-full border border-black font-display font-semibold whitespace-nowrap text-black transition-colors hover:bg-black/5"
+        style={{ ...type, height: u(60), paddingLeft: u(30), paddingRight: u(30) }}
       >
         {t.explore}
       </a>
@@ -480,21 +528,25 @@ function Counter({ reduceMotion }: { reduceMotion: RM }) {
   const { lang } = useLang();
   const c = copy[lang].counter;
   return (
-    <motion.div {...reveal(7, reduceMotion)} className="pointer-events-none absolute inset-0">
-      <WavesIcon className="absolute text-black" style={{ left: u(27), top: uy(716.9), width: u(68), height: u(68) }} />
-      <span className="tbox absolute flex items-baseline font-display text-black" style={{ left: u(123.17), top: uy(729.4) }}>
-        <span className="font-light" style={{ fontSize: u(61.411), lineHeight: 1, letterSpacing: u(-1.8423) }}>
-          {c.value}
+    // One flex row anchored to the bottom edge, so value and label never collide at wide aspect ratios.
+    <motion.div
+      {...reveal(7, reduceMotion)}
+      className="pointer-events-none absolute flex items-center font-display text-black"
+      style={{ left: u(27), bottom: u(22), gap: u(28) }}
+    >
+      <WavesIcon style={{ width: u(68), height: u(68) }} />
+      <span className="flex flex-col" style={{ gap: u(10) }}>
+        <span className="tbox flex items-baseline">
+          <span className="font-light" style={{ fontSize: u(61.411), lineHeight: 1, letterSpacing: u(-1.8423) }}>
+            {c.value}
+          </span>
+          <span className="font-extralight" style={{ fontSize: u(41.084), lineHeight: 1, letterSpacing: u(-1.2325) }}>
+            {c.suffix}
+          </span>
         </span>
-        <span className="font-extralight" style={{ fontSize: u(41.084), lineHeight: 1, letterSpacing: u(-1.2325) }}>
-          {c.suffix}
+        <span className="tbox font-medium whitespace-nowrap" style={{ fontSize: u(14), lineHeight: 1.2, letterSpacing: u(-0.14) }}>
+          {c.label}
         </span>
-      </span>
-      <span
-        className="tbox absolute font-display font-medium whitespace-nowrap text-black"
-        style={{ left: u(123.17), top: uy(779.44), fontSize: u(14), lineHeight: 1.2, letterSpacing: u(-0.14) }}
-      >
-        {c.label}
       </span>
     </motion.div>
   );
@@ -628,6 +680,7 @@ function MobileStage({ reduceMotion }: { reduceMotion: RM }) {
         style={{ y: glowY }}
         className="pointer-events-none absolute -left-24 -top-24 h-[420px] w-[420px] rounded-full bg-[#ffffff] opacity-60 blur-[90px]"
       />
+      <Specks reduceMotion={reduceMotion} />
       <div className="pointer-events-none absolute inset-0 bg-[#6b6b6b] mix-blend-soft-light" />
 
       <div className="relative flex flex-col gap-6">
