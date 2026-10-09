@@ -12,6 +12,17 @@
   --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-bai-jamjuree);
+  --font-inter: var(--nf-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-outfit: var(--nf-outfit), sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+/* Opción 2 */
+.grid-bg {
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
 }
 
 html {
