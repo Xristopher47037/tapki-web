@@ -1,5 +1,8 @@
 // Todo el texto de la página vive aquí.
-// Para agregar un producto nuevo: copia un bloque de `projects`, cámbialo y pon su captura en public/shots/.
+// Para agregar un producto nuevo: copia un bloque de `projects`, cámbialo, pon su captura en public/shots/
+// y elige su ícono en https://lucide.dev/icons.
+
+import { Clock, IdCard, MessageCircle, UtensilsCrossed, type LucideIcon } from "lucide-react";
 
 export type Lang = "es" | "en";
 type T = Record<Lang, string>;
@@ -9,6 +12,7 @@ export type Project = {
   name: string;
   status: "live" | "dev";
   shot: string; // captura vertical en public/shots/
+  icon: LucideIcon; // ícono de lucide-react para el círculo del inicio
   niche: T;
   tagline: T;
   problem: T;
@@ -21,6 +25,7 @@ export const projects: Project[] = [
     name: "Tapki Menu",
     status: "live",
     shot: "/shots/menu.webp",
+    icon: UtensilsCrossed,
     niche: { es: "Restaurantes", en: "Restaurants" },
     tagline: {
       es: "La carta, los pedidos y la caja en un solo lugar.",
@@ -52,6 +57,7 @@ export const projects: Project[] = [
     name: "Tapki Control",
     status: "live",
     shot: "/shots/control.webp",
+    icon: Clock,
     niche: { es: "Conjuntos y empresas", en: "Buildings and companies" },
     tagline: {
       es: "La asistencia de tu personal con un toque.",
@@ -83,6 +89,7 @@ export const projects: Project[] = [
     name: "Tapki Card",
     status: "live",
     shot: "/shots/card.webp",
+    icon: IdCard,
     niche: { es: "Profesionales y equipos", en: "Professionals and teams" },
     tagline: {
       es: "Tu tarjeta de presentación en un toque.",
@@ -114,6 +121,7 @@ export const projects: Project[] = [
     name: "Tapki Vendedor",
     status: "dev",
     shot: "/shots/vendedor.webp",
+    icon: MessageCircle,
     niche: { es: "Negocios que venden por WhatsApp", en: "Businesses that sell on WhatsApp" },
     tagline: {
       es: "Un vendedor con IA que atiende 24/7.",

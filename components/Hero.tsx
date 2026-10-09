@@ -12,10 +12,10 @@ import {
 } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import Keycap from "@/components/Keycap";
+import Chip from "@/components/Chip";
 import { LangToggle, useLang } from "@/components/Lang";
 import { copy, projects } from "@/lib/content";
-import { EASE, FEATURE_CARD_HEIGHT, FEATURE_CARD_TOP, SWITCHES, reveal, u, uy, wa } from "@/lib/hero-data";
+import { EASE, FEATURE_CARD_HEIGHT, FEATURE_CARD_TOP, reveal, u, uy, wa } from "@/lib/hero-data";
 
 type RM = boolean | null;
 
@@ -429,6 +429,9 @@ function Headline({ reduceMotion }: { reduceMotion: RM }) {
   );
 }
 
+// Four products in the bracket, plus an empty "+" slot for what comes next.
+const CHIP_ICONS = [...projects.slice(0, 4).map((p) => p.icon), undefined];
+
 function Switches({ reduceMotion }: { reduceMotion: RM }) {
   const bracket = { fontSize: u(49.062), lineHeight: 1, letterSpacing: u(-1.4719), top: "50%", transform: "translateY(-50%)" };
   return (
@@ -441,14 +444,14 @@ function Switches({ reduceMotion }: { reduceMotion: RM }) {
       <span className="absolute font-display font-normal text-black" style={{ ...bracket, left: 0 }}>
         [
       </span>
-      {SWITCHES.map((s) => (
-        <Keycap
-          key={s.left}
-          cap={s.cap}
-          base={s.base}
-          style={{ position: "absolute", left: u(s.left), top: u(53.131 - s.height), width: u(s.width), height: u(s.height) }}
-        />
-      ))}
+      <span
+        className="absolute flex items-center justify-between"
+        style={{ left: u(19), width: u(169), top: "50%", transform: "translateY(-50%)" }}
+      >
+        {CHIP_ICONS.map((icon, i) => (
+          <Chip key={i} icon={icon} style={{ width: u(31), height: u(31) }} />
+        ))}
+      </span>
       <span className="absolute font-display font-normal text-black" style={{ ...bracket, left: u(190.82) }}>
         ]
       </span>
@@ -619,7 +622,7 @@ function FeatureTabs({ reduceMotion }: { reduceMotion: RM }) {
         className="absolute flex items-center justify-center"
         style={{ left: u(672), top: uy(622), width: u(154.115), height: u(156.921) }}
       >
-        <Keycap cap="#1a1a1a" base="#5c5c5c" style={{ width: u(107.109), height: u(117.203), transform: "rotate(-33.66deg)" }} />
+        <Chip icon={projects[0].icon} style={{ width: u(104), height: u(104), transform: "rotate(-12deg)" }} />
       </div>
       {features.map((f, i) => (
         <span
@@ -752,10 +755,10 @@ function MobileStage({ reduceMotion }: { reduceMotion: RM }) {
           {t.headline.join(" ")}
         </motion.h1>
 
-        <motion.div {...reveal(2, reduceMotion)} aria-hidden className="flex items-end gap-1 font-display text-4xl leading-none">
+        <motion.div {...reveal(2, reduceMotion)} aria-hidden className="flex items-center gap-1.5 font-display text-4xl leading-none">
           <span>[</span>
-          {SWITCHES.map((s) => (
-            <Keycap key={s.left} cap={s.cap} base={s.base} className="h-8 w-6" />
+          {CHIP_ICONS.map((icon, i) => (
+            <Chip key={i} icon={icon} className="h-8 w-8" />
           ))}
           <span>]</span>
         </motion.div>
@@ -822,7 +825,7 @@ function MobileStage({ reduceMotion }: { reduceMotion: RM }) {
                 i === 0 ? "bg-white text-black" : "bg-[rgba(20,20,20,0.55)] text-[#fffcfc]"
               }`}
             >
-              {i === 0 && <Keycap cap="#1a1a1a" base="#5c5c5c" className="h-9 w-7 shrink-0" />}
+              {i === 0 && <Chip icon={projects[0].icon} className="h-9 w-9" />}
               <span>
                 {projects[i].name} · {title}
               </span>
