@@ -174,7 +174,6 @@ function HeroStage({ reduceMotion }: { reduceMotion: RM }) {
       <FeatureTabs reduceMotion={reduceMotion} />
       <Paragraph reduceMotion={reduceMotion} />
       <Headline reduceMotion={reduceMotion} />
-      <Switches reduceMotion={reduceMotion} />
       <StatCards reduceMotion={reduceMotion} x={cardsX} y={cardsY} />
       <CtaRow reduceMotion={reduceMotion} />
       <Counter reduceMotion={reduceMotion} />
@@ -403,7 +402,7 @@ function Headline({ reduceMotion }: { reduceMotion: RM }) {
       <span className={line} style={{ ...HEADLINE_TYPE, left: u(65.63), top: uy(201.66) }}>
         {t.headline[0]}
       </span>
-      <span className={line} style={{ ...HEADLINE_TYPE, left: u(385.17), top: uy(262.64) }}>
+      <span className={line} style={{ ...HEADLINE_TYPE, left: u(158.26), top: uy(262.64) }}>
         {t.headline[1]}
       </span>
       {/* Line three and the badge share a row so the badge follows the word in either language. */}
@@ -429,35 +428,6 @@ function Headline({ reduceMotion }: { reduceMotion: RM }) {
   );
 }
 
-// Four products in the bracket, plus an empty "+" slot for what comes next.
-const CHIP_ICONS = [...projects.slice(0, 4).map((p) => p.icon), undefined];
-
-function Switches({ reduceMotion }: { reduceMotion: RM }) {
-  const bracket = { fontSize: u(49.062), lineHeight: 1, letterSpacing: u(-1.4719), top: "50%", transform: "translateY(-50%)" };
-  return (
-    <motion.div
-      {...reveal(2, reduceMotion)}
-      aria-hidden
-      className="absolute"
-      style={{ left: u(158.26), top: uy(260.13), width: u(206.823), height: u(53.131) }}
-    >
-      <span className="absolute font-display font-normal text-black" style={{ ...bracket, left: 0 }}>
-        [
-      </span>
-      <span
-        className="absolute flex items-center justify-between"
-        style={{ left: u(19), width: u(169), top: "50%", transform: "translateY(-50%)" }}
-      >
-        {CHIP_ICONS.map((icon, i) => (
-          <Chip key={i} icon={icon} style={{ width: u(31), height: u(31) }} />
-        ))}
-      </span>
-      <span className="absolute font-display font-normal text-black" style={{ ...bracket, left: u(190.82) }}>
-        ]
-      </span>
-    </motion.div>
-  );
-}
 
 function Paragraph({ reduceMotion }: { reduceMotion: RM }) {
   const { lang } = useLang();
@@ -595,15 +565,11 @@ const CUT = "polygon(0% 34%, 7% 0%, 100% 0%, 100% 100%, 0% 100%)";
 function FeatureTabs({ reduceMotion }: { reduceMotion: RM }) {
   const { lang } = useLang();
   const tabs = copy[lang].tabs;
+  // `visible` = the part of each tab not covered by the next one; content lives only there.
   const features = [
-    { id: "menu", left: 632.37, width: 407.235, textLeft: 819.14, dotsLeft: 965.44, dark: true },
-    { id: "control", left: 929.14, width: 307.235, textLeft: 1053.72, dotsLeft: 1167.07, dark: false },
-    { id: "card", left: 1131.52, width: 307.235, textLeft: 1254.68, dotsLeft: 1369.8, dark: false },
-  ];
-  const dots = [
-    [16.82, 5.61],
-    [5.6, 5.61],
-    [5.6, 16.83],
+    { id: "menu", left: 632.37, width: 407.235, visible: 296.77, dark: true },
+    { id: "control", left: 929.14, width: 307.235, visible: 202.38, dark: false },
+    { id: "card", left: 1131.52, width: 307.235, visible: 307.235, dark: false },
   ];
   return (
     <motion.div {...reveal(8, reduceMotion)} className="pointer-events-none absolute inset-0">
@@ -611,52 +577,25 @@ function FeatureTabs({ reduceMotion }: { reduceMotion: RM }) {
         <a
           key={f.id}
           href={`#${f.id}`}
-          aria-label={tabs[i]}
           className={`pointer-events-auto absolute transition-opacity hover:opacity-90 ${
-            f.dark ? "bg-[#f4f4f4]" : "bg-[rgba(20,20,20,0.55)] backdrop-blur-[24px]"
+            f.dark ? "bg-[#f4f4f4] text-black" : "bg-[rgba(20,20,20,0.55)] text-[#fffcfc] backdrop-blur-[24px]"
           }`}
           style={{ left: u(f.left), top: uy(FEATURE_CARD_TOP), width: u(f.width), height: uy(FEATURE_CARD_HEIGHT), clipPath: CUT }}
-        />
-      ))}
-      <div
-        className="absolute flex items-center justify-center"
-        style={{ left: u(672), top: uy(622), width: u(154.115), height: u(156.921) }}
-      >
-        <Chip icon={projects[0].icon} style={{ width: u(104), height: u(104), transform: "rotate(-12deg)" }} />
-      </div>
-      {features.map((f, i) => (
-        <span
-          key={f.id}
-          className="tbox absolute font-display font-medium"
-          style={{
-            left: u(f.textLeft),
-            top: uy(738),
-            width: u(f.dark ? 140 : 117.413),
-            fontSize: u(18),
-            lineHeight: 1.2,
-            letterSpacing: u(-0.18),
-            color: f.dark ? "#000000" : "#fffcfc",
-          }}
         >
-          {tabs[i]}
-        </span>
-      ))}
-      {features.flatMap((f) =>
-        dots.map(([dx, dy]) => (
           <span
-            key={`${f.id}-${dx}-${dy}`}
-            className="absolute"
-            style={{
-              left: u(f.dotsLeft + dx),
-              top: uy(FEATURE_CARD_TOP + 12.5 + dy),
-              width: u(4.085),
-              height: u(4.085),
-              background: f.dark ? "#060606" : "#ffffff",
-              transform: "rotate(135deg)",
-            }}
-          />
-        )),
-      )}
+            className="absolute inset-y-0 flex items-center"
+            style={{ left: u(34), width: u(f.visible - 50), gap: u(12) }}
+          >
+            <Chip icon={projects[i].icon} style={{ width: u(46), height: u(46) }} />
+            <span
+              className="font-display font-medium"
+              style={{ fontSize: u(16), lineHeight: 1.15, letterSpacing: u(-0.16) }}
+            >
+              {tabs[i]}
+            </span>
+          </span>
+        </a>
+      ))}
     </motion.div>
   );
 }
@@ -755,14 +694,6 @@ function MobileStage({ reduceMotion }: { reduceMotion: RM }) {
           {t.headline.join(" ")}
         </motion.h1>
 
-        <motion.div {...reveal(2, reduceMotion)} aria-hidden className="flex items-center gap-1.5 font-display text-4xl leading-none">
-          <span>[</span>
-          {CHIP_ICONS.map((icon, i) => (
-            <Chip key={i} icon={icon} className="h-8 w-8" />
-          ))}
-          <span>]</span>
-        </motion.div>
-
         <motion.div
           {...reveal(3, reduceMotion)}
           className="flex w-fit items-center gap-2 rounded-full border border-white/40 bg-white/30 py-1 pl-1 pr-3 backdrop-blur-sm"
@@ -825,7 +756,7 @@ function MobileStage({ reduceMotion }: { reduceMotion: RM }) {
                 i === 0 ? "bg-white text-black" : "bg-[rgba(20,20,20,0.55)] text-[#fffcfc]"
               }`}
             >
-              {i === 0 && <Chip icon={projects[0].icon} className="h-9 w-9" />}
+              <Chip icon={projects[i].icon} className="h-9 w-9" />
               <span>
                 {projects[i].name} · {title}
               </span>
