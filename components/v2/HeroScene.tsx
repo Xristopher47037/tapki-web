@@ -9,6 +9,7 @@ import { projects } from "@/lib/content";
 import { wa } from "@/lib/hero-data";
 import { copy2 } from "./copy";
 import { ping, startPad, stopPad } from "./sound";
+import SectionNav from "@/components/SectionNav";
 import Products from "./Products";
 import TapScene from "./TapScene";
 
@@ -63,7 +64,9 @@ export default function HeroScene() {
 
   return (
     <>
+    <SectionNav dark productPrefix="p-" custom={t.custom} />
     <div
+      id="inicio"
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className="relative flex h-dvh flex-col justify-between overflow-hidden bg-black font-inter text-white selection:bg-white selection:text-black"

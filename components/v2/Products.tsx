@@ -88,7 +88,7 @@ export default function Products({ onQuote }: { onQuote: (product: string) => vo
       </section>
 
       {/* Productos */}
-      <section id="productos" className="relative mx-auto max-w-7xl scroll-mt-6 px-6 pb-24 md:px-12 md:pb-32">
+      <section id="productos" className="relative mx-auto max-w-7xl scroll-mt-20 px-6 pb-24 md:px-12 md:pb-32">
         <motion.div {...inView} className="flex flex-wrap items-end justify-between gap-6 border-t border-white/10 pt-16">
           <div>
             <p className={kicker}>{s.productsKicker}</p>
@@ -107,7 +107,7 @@ export default function Products({ onQuote }: { onQuote: (product: string) => vo
               key={p.id}
               id={`p-${p.id}`}
               {...inView}
-              className="grid scroll-mt-8 items-center gap-8 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-6 md:p-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14"
+              className="grid scroll-mt-24 items-center gap-8 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-6 md:p-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14"
             >
               <div className={i % 2 ? "lg:order-2" : ""}>
                 <div className="flex flex-wrap items-center gap-3">
@@ -165,7 +165,7 @@ export default function Products({ onQuote }: { onQuote: (product: string) => vo
       </section>
 
       {/* A la medida */}
-      <section id="a-la-medida" className="relative mx-auto max-w-7xl scroll-mt-6 px-6 pb-24 md:px-12 md:pb-32">
+      <section id="a-la-medida" className="relative mx-auto max-w-7xl scroll-mt-20 px-6 pb-24 md:px-12 md:pb-32">
         <motion.div {...inView} className="overflow-hidden rounded-[36px] bg-white p-8 text-black md:p-14">
           <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-black/45">{s.customKicker}</p>
           <h2 className={`${big} mt-4 text-[clamp(2.4rem,6.5vw,5.5rem)]`}>
