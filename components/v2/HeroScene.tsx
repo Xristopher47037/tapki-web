@@ -9,6 +9,7 @@ import { projects } from "@/lib/content";
 import { wa } from "@/lib/hero-data";
 import { copy2 } from "./copy";
 import { ping, startPad, stopPad } from "./sound";
+import Products from "./Products";
 import TapScene from "./TapScene";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -29,7 +30,7 @@ export default function HeroScene() {
   const [ambientGlowColor, setAmbientGlowColor] = useState(GLOW_COLORS[0].value);
   const [glowSize, setGlowSize] = useState(80);
   const [glowIntensity, setGlowIntensity] = useState(1);
-  const [isProjectOpen, setIsProjectOpen] = useState(false);
+  const [quoteFor, setQuoteFor] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showGlowControls, setShowGlowControls] = useState(false);
@@ -61,6 +62,7 @@ export default function HeroScene() {
   const glow = (size: number) => ({ width: `${size * glowIntensity}%`, height: `${size * glowIntensity}%` });
 
   return (
+    <>
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
@@ -115,11 +117,11 @@ export default function HeroScene() {
         <Header
           onMenu={() => setIsMenuOpen(true)}
           onChat={() => setIsChatOpen(true)}
-          onStart={() => setIsProjectOpen(true)}
+          onStart={() => setQuoteFor(projects[0].name)}
         />
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-end gap-8 px-6 pb-20 md:px-12 lg:grid-cols-12">
           <div className="lg:col-span-6 xl:col-span-7">
-            <LeftInfoBlock onStart={() => setIsProjectOpen(true)} onChat={() => setIsChatOpen(true)} />
+            <LeftInfoBlock onIdea={() => setQuoteFor(t.quote.other)} />
           </div>
           <div className="hidden justify-end lg:col-span-6 lg:flex xl:col-span-5">
             <RightInfoBlock />
@@ -224,11 +226,17 @@ export default function HeroScene() {
         </button>
       </div>
 
-      {/* z-50 overlays */}
-      <AnimatePresence>{isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}</AnimatePresence>
-      <AnimatePresence>{isProjectOpen && <ProjectModal onClose={() => setIsProjectOpen(false)} />}</AnimatePresence>
-      <AnimatePresence>{isChatOpen && <ChatDrawer onClose={() => setIsChatOpen(false)} />}</AnimatePresence>
     </div>
+
+    <Products onQuote={setQuoteFor} />
+
+    {/* z-50 overlays (fixed, so they work from anywhere on the page) */}
+    <AnimatePresence>{isMenuOpen && <SideMenu onClose={() => setIsMenuOpen(false)} />}</AnimatePresence>
+    <AnimatePresence>
+      {quoteFor && <ProjectModal initial={quoteFor} onClose={() => setQuoteFor(null)} />}
+    </AnimatePresence>
+    <AnimatePresence>{isChatOpen && <ChatDrawer onClose={() => setIsChatOpen(false)} />}</AnimatePresence>
+    </>
   );
 }
 
@@ -244,7 +252,7 @@ const itemVariants: Variants = {
 };
 
 function TapkiTitle({ est, count }: { est: string; count: string }) {
-  const word = "font-outfit font-black uppercase leading-[0.8] tracking-[-0.05em] text-[24vw] md:text-[17vw] lg:text-[15vw]";
+  const word = "font-outfit font-black uppercase leading-[0.8] tracking-[-0.05em] text-[min(24vw,30vh)] md:text-[min(17vw,28vh)] lg:text-[min(15vw,27vh)]";
   return (
     <motion.div
       variants={containerVariants}
@@ -252,7 +260,7 @@ function TapkiTitle({ est, count }: { est: string; count: string }) {
       animate="visible"
       className="relative mx-auto w-full max-w-7xl select-none px-6 pb-2 pt-4 md:px-12 md:pt-6"
     >
-      <div className="relative flex flex-col items-stretch justify-between md:flex-row">
+      <div className="relative flex flex-col items-stretch md:flex-row md:justify-center md:gap-[7vw]">
         <div className="absolute inset-y-0 left-1/2 hidden w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent md:block" />
         <motion.div variants={itemVariants}>
           <p className="mb-1 ml-2 font-mono text-xs uppercase tracking-[0.25em] text-white/40">{est}</p>
@@ -363,7 +371,7 @@ function Header({ onMenu, onChat, onStart }: { onMenu: () => void; onChat: () =>
 
 /* ------------------------------------------------------------ info blocks */
 
-function LeftInfoBlock({ onStart, onChat }: { onStart: () => void; onChat: () => void }) {
+function LeftInfoBlock({ onIdea }: { onIdea: () => void }) {
   const { lang } = useLang();
   const t = copy2[lang];
   const digits = [...String(projects.length).padStart(2, "0"), "+"];
@@ -376,7 +384,7 @@ function LeftInfoBlock({ onStart, onChat }: { onStart: () => void; onChat: () =>
     >
       <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1 pl-1 pr-3 text-xs backdrop-blur-md">
         <span className="flex -space-x-2">
-          {projects.slice(0, 3).map((p) => (
+          {projects.map((p) => (
             <Chip key={p.id} icon={p.icon} className="h-6 w-6 ring-2 ring-black" />
           ))}
         </span>
@@ -384,10 +392,11 @@ function LeftInfoBlock({ onStart, onChat }: { onStart: () => void; onChat: () =>
         <span className="text-white/40">✦</span>
       </span>
 
-      <h2 className="font-outfit text-[clamp(2.2rem,5.2vw,4.6rem)] font-black uppercase leading-[0.95] tracking-[-0.02em]">
+      <h2 className="font-outfit text-[clamp(2rem,min(4.6vw,8.5vh),4.4rem)] font-black uppercase leading-[0.95] tracking-[-0.02em]">
         <span className="block">{t.lines[0]}</span>
+        <span className="block">{t.lines[1]}</span>
         <span className="flex items-center gap-3">
-          {t.lines[1]} <span className="text-white/40">&gt;</span>
+          <span className="text-white/40">+</span> {t.lines[2]} <span className="text-white/40">&gt;</span>
           <span className="flex gap-1">
             {digits.map((d, i) => (
               <motion.span
@@ -401,29 +410,23 @@ function LeftInfoBlock({ onStart, onChat }: { onStart: () => void; onChat: () =>
               </motion.span>
             ))}
           </span>
-          <span className="hidden self-end pb-2 font-mono text-[10px] font-normal tracking-[0.2em] text-white/40 xl:block">
-            {t.unit}
-          </span>
         </span>
-        <span className="block">{t.lines[2]}</span>
       </h2>
 
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          onClick={onStart}
-          className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-transform hover:scale-[1.04]"
+          onClick={onIdea}
+          className="flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-transform hover:scale-[1.04]"
         >
-          {t.start}
+          {t.idea} <ArrowUpRight className="h-4 w-4" />
         </button>
-        <button
-          type="button"
-          onClick={onChat}
+        <a
+          href="#productos"
           className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 text-xs font-semibold uppercase tracking-wider backdrop-blur-md transition-colors hover:bg-white/10"
         >
-          {t.chat}
-          <ArrowUpRight className="h-3.5 w-3.5" />
-        </button>
+          {t.seeProducts}
+        </a>
       </div>
     </motion.div>
   );
@@ -442,7 +445,7 @@ function RightInfoBlock() {
     >
       <p className="text-sm leading-relaxed text-white/70">
         {t.about}{" "}
-        <a href="/#productos" className="inline-flex items-center gap-1 text-white underline-offset-4 hover:underline">
+        <a href="#productos" className="inline-flex items-center gap-1 text-white underline-offset-4 hover:underline">
           {t.seeProducts} <ArrowUpRight className="h-3.5 w-3.5" />
         </a>
       </p>
@@ -501,7 +504,7 @@ function Backdrop({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
     />
   );
 }
@@ -518,7 +521,7 @@ function SideMenu({ onClose }: { onClose: () => void }) {
         animate={{ x: 0 }}
         exit={{ x: "-100%" }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="absolute inset-y-0 left-0 z-50 flex w-[min(420px,90vw)] flex-col border-r border-white/10 bg-[#0b0b0b]/95 p-6 backdrop-blur-xl md:p-10"
+        className="fixed inset-y-0 left-0 z-50 flex w-[min(420px,90vw)] flex-col border-r border-white/10 bg-[#0b0b0b]/95 p-6 backdrop-blur-xl md:p-10"
       >
         <div className="flex items-center justify-between">
           <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/40">{t.menu}</span>
@@ -527,6 +530,16 @@ function SideMenu({ onClose }: { onClose: () => void }) {
           </button>
         </div>
         <ul className="mt-10 flex flex-col gap-1">
+          <motion.li initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1, duration: 0.5, ease: EASE }}>
+            <a href="#a-la-medida" onClick={onClose} className="group flex items-center gap-4 rounded-2xl bg-white p-3 text-black">
+              <Chip className="h-11 w-11" />
+              <span className="flex-1">
+                <span className="block font-outfit text-2xl font-bold uppercase leading-none">{t.custom}</span>
+                <span className="mt-1 block text-xs text-black/50">{t.customHint}</span>
+              </span>
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </motion.li>
           {projects.map((p, i) => (
             <motion.li
               key={p.id}
@@ -534,7 +547,7 @@ function SideMenu({ onClose }: { onClose: () => void }) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease: EASE }}
             >
-              <a href={`/#${p.id}`} className="group flex items-center gap-4 rounded-2xl p-3 transition-colors hover:bg-white/5">
+              <a href={`#p-${p.id}`} onClick={onClose} className="group flex items-center gap-4 rounded-2xl p-3 transition-colors hover:bg-white/5">
                 <Chip icon={p.icon} className="h-11 w-11" />
                 <span className="flex-1">
                   <span className="block font-outfit text-2xl font-bold uppercase leading-none">{p.name}</span>
@@ -556,11 +569,11 @@ function SideMenu({ onClose }: { onClose: () => void }) {
   );
 }
 
-function ProjectModal({ onClose }: { onClose: () => void }) {
+function ProjectModal({ initial, onClose }: { initial: string; onClose: () => void }) {
   const { lang } = useLang();
   const q = copy2[lang].quote;
-  const products = [...projects.map((p) => p.name), q.other];
-  const [product, setProduct] = useState(products[0]);
+  const products = [q.other, ...projects.map((p) => p.name)];
+  const [product, setProduct] = useState(initial);
   const [business, setBusiness] = useState("");
   const [size, setSize] = useState(q.sizes[0]);
   const [when, setWhen] = useState(q.whens[0]);
@@ -575,7 +588,7 @@ function ProjectModal({ onClose }: { onClose: () => void }) {
   return (
     <>
       <Backdrop onClose={onClose} />
-      <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center p-4">
+      <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
         <motion.form
           role="dialog"
           aria-modal="true"
@@ -701,7 +714,7 @@ function ChatDrawer({ onClose }: { onClose: () => void }) {
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="absolute inset-y-0 right-0 z-50 flex w-[min(400px,100vw)] flex-col border-l border-white/10 bg-[#0b0b0b]"
+        className="fixed inset-y-0 right-0 z-50 flex w-[min(400px,100vw)] flex-col border-l border-white/10 bg-[#0b0b0b]"
       >
         <div className="flex items-center gap-3 border-b border-white/10 p-5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
